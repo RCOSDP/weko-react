@@ -34,10 +34,10 @@ function RangeFacet({ item, nameshow, name, key, labels }) {
       <Collapse isOpen={isOpen}>
         <div className="panel-body index-body">
           {!check_temp(name) && (
-            <RangeSelect value={item.buckets} name={name} labels={labels} />
+            <RangeSelect values={item.buckets} name={name} labels={labels} />
           )}
           {check_temp(name) && false && (
-            <RangeSlider value={item.buckets} name={name} labels={labels} />
+            <RangeSlider values={item.buckets} name={name} labels={labels} />
           )}
         </div>
       </Collapse>

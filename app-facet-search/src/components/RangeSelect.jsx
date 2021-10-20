@@ -3,7 +3,7 @@ import "rc-tooltip/assets/bootstrap.css";
 import React from "react";
 import Select from "react-select";
 
-function RangeSelect({ value, name, labels }) {
+function RangeSelect({ values, name, labels }) {
   function handleChange(params) {
     let searchUrl = "";
     if (search.indexOf("&") >= 0) {
@@ -21,28 +21,31 @@ function RangeSelect({ value, name, labels }) {
     }
     params.map(function (subitem, k) {
       const pattern =
-        encodeURIComponent(name) + "=" + encodeURIComponent(subitem.value);
+          encodeURIComponent(name) + "=" + encodeURIComponent(subitem.value);
       search += "&" + pattern;
     });
+    search = search.replace("q=0", "q=");
+    search += search.indexOf('is_facet_search=') == -1 ? '&is_facet_search=true' : '';
     window.location.href = "/search" + search;
   }
 
   let search = window.location.search.replace(",", "%2C") || "?";
-  let options_default = [];
+  let params = window.location.search.substring(1).split('&');
+  for (let i = 0; i < params.length; i++) {
+    params[i] = decodeURIComponent(params[i]);
+  }
+  let defaultOptions = [];
   let options = [];
-  if (value) {
-    value.map(function (subitem, k) {
-      let option = { label: "", value: "" };
-      const pattern =
-        encodeURIComponent(name) + "=" + encodeURIComponent(subitem.key);
-      const is_check = search.indexOf(pattern + "&") >= 0 ? true : false;
-      const is_end = search.endsWith(pattern);
-      option.label =
-        (labels[subitem.key] || subitem.key) + "(" + subitem.doc_count + ")";
-      option.value = subitem.key;
+  if (values) {
+    values.map(function (subitem, k) {
+      let option = {
+        label: (labels[subitem.key] || subitem.key) + "(" + subitem.doc_count + ")",
+        value: subitem.key
+      };
       options.push(option);
-      if (is_check || is_end) {
-        options_default.push(option);
+      let pattern = name + "=" + subitem.key;
+      if (params.indexOf(pattern) != -1) {
+        defaultOptions.push(option);
       }
     });
   }
@@ -50,7 +53,7 @@ function RangeSelect({ value, name, labels }) {
     <div>
       <div className="select-container">
         <Select
-          defaultValue={options_default}
+          defaultValue={defaultOptions}
           isMulti
           name="Facet_Search"
           onChange={(_selectedOption) => {

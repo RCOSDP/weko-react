@@ -9,7 +9,6 @@ function RangeSlider({ value, name, labels }) {
     let searchUrl = "";
     if (search.indexOf("&") >= 0) {
       let arrSearch = search.split("&");
-      console.log(arrSearch)
       for (let i = 0; i < arrSearch.length; i++) {
         if (arrSearch[i].indexOf(encodeURIComponent(name) + "=") < 0) {
           searchUrl += "&" + arrSearch[i];
