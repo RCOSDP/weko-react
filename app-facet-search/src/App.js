@@ -1,5 +1,6 @@
 import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
+import './index.css';
 import React from "react";
 import fetch from "unfetch";
 import RangeFacet from "./components/RangeFacet";
@@ -15,10 +16,13 @@ class FacetSearch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      is_enable: true,
+      is_enable: false,
       list_title: {},
       list_facet: {},
-      list_order: {}
+      list_order: {},
+      list_uiType: {},
+      list_isOpen: {},
+      list_displayNumber: {}
     };
     this.getTitleAndOrder = this.getTitleAndOrder.bind(this);
     this.get_facet_search_list = this.get_facet_search_list.bind(this);
@@ -28,15 +32,25 @@ class FacetSearch extends React.Component {
   getTitleAndOrder() {
     let titleLst = {};
     let orderLst = {};
+    let uiTypeLst = {};
+    let isOpenLst = {};
+    let displayNumberLst = {};
     fetch("/facet-search/get-title-and-order", {method: "POST"})
       .then((r) => r.json())
       .then((response) => {
         if (response.status) {
           titleLst = response.data.titles;
-          orderLst =response.data.order;
+          orderLst = response.data.order;
+          uiTypeLst = response.data.uiTypes;
+          isOpenLst = response.data.isOpens;
+          displayNumberLst = response.data.displayNumbers;
         }
         this.setState({ list_title: titleLst });
         this.setState({ list_order: orderLst });
+        this.setState({ list_uiType: uiTypeLst });
+        this.setState({ list_isOpen: isOpenLst });
+        this.setState({ list_displayNumber: displayNumberLst });
+        this.setState({ is_enable: true });
       });
   }
 
@@ -77,9 +91,13 @@ class FacetSearch extends React.Component {
       	      let a = tmp.buckets[i];
       
       	      if ((l == "en") && ((a.key).charCodeAt(0) > 256 || (a.key).charCodeAt(a.key.length - 1) > 256)) {
-      	    	delete list_facet[name].buckets[i];
+      	    	//delete list_facet[name].buckets[i];
+              list_facet[name].buckets.splice(i,1);
+              i--;
       	      } else if ((l != "en") && ((a.key).charCodeAt(0) < 256 && (a.key).charCodeAt(a.key.length - 1) < 256)) {
-      	    	delete list_facet[name].buckets[i];
+      	    	//delete list_facet[name].buckets[i];
+              list_facet[name].buckets.splice(i,1);
+              i--;
       	      }
       	    }
           }
@@ -90,7 +108,9 @@ class FacetSearch extends React.Component {
       	      let a = tmp.buckets[i];
       
       	      if (((a.key).charCodeAt(0) > 256 || (a.key).charCodeAt(a.key.length - 1) > 256)) {
-      	    	delete list_facet[name].buckets[i];
+      	    	  //delete list_facet[name].buckets[i];
+                list_facet[name].buckets.splice(i,1);
+                i--;
       	      } 
       	    }
           }
@@ -107,7 +127,7 @@ class FacetSearch extends React.Component {
   }
 
   render() {
-    const { is_enable, list_title, list_facet, list_order } = this.state;
+    const { is_enable, list_title, list_facet, list_order, list_uiType, list_isOpen, list_displayNumber } = this.state;
     return (
       <div>
         {is_enable && (
@@ -116,8 +136,11 @@ class FacetSearch extends React.Component {
               const name = list_order[order];
               const item = list_facet[name];
               const nameshow = list_title[name];
+              const isOpen = list_isOpen[name];
+              const uiType = list_uiType[name];
+              const displayNumber = list_displayNumber[name];
               return (
-                <RangeFacet item={item} nameshow={nameshow} name={name} key={key} labels={LABELS} />
+                <RangeFacet item={item} nameshow={nameshow} name={name} key={key} labels={LABELS} isInitOpen={isOpen} uiType={uiType} displayNumber={displayNumber} />
               );
             })}
           </div>
