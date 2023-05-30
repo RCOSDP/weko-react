@@ -4,37 +4,28 @@ import React from "react";
 import Select from "react-select";
 
 function RangeSelect({ values, name, labels }) {
+
+  //If there is a space in the id attribute, it cannot be searched by ID, so escape it.
+  let facet_item_id = "id_" + name + "_select";
+
   function handleChange(params) {
-    let searchUrl = "";
-    if (search.indexOf("&") >= 0) {
-      let arrSearch = search.split("&");
-      for (let i = 0; i < arrSearch.length; i++) {
-        if (arrSearch[i].indexOf(encodeURIComponent(name) + "=") < 0) {
-          searchUrl += "&" + arrSearch[i];
-        }
-      }
-      //Delete "&" in First element
-      searchUrl = searchUrl.substring(1);
-    }
-    if (searchUrl != "") {
-      search = searchUrl;
-    }
+    search.delete(name);
     
     params.map(function (subitem, k) {
-      const pattern =
-          encodeURIComponent(name) + "=" + encodeURIComponent(subitem.value);
-      search += "&" + pattern;
+      search.append(name, subitem.value);
     });
-    search = search.replace("q=0", "q=");
-    search += search.indexOf('is_facet_search=') == -1 ? '&is_facet_search=true' : '';
-    window.location.href = "/search" + search;
+
+    if(search.get('q') === '0') search.set('q', '');
+    search.set('is_facet_search', 'true');
+    if(window.invenioSearchFunctions) {
+      window.invenioSearchFunctions.reSearchInvenio(search);
+    }else{
+      window.location.href = "/search?" + search;
+    }
   }
 
-  let search = window.location.search.replace(",", "%2C") || "?";
-  let params = window.location.search.substring(1).split('&');
-  for (let i = 0; i < params.length; i++) {
-    params[i] = decodeURIComponent(params[i]);
-  }
+  let search = new URLSearchParams(window.location.search);
+
   let defaultOptions = [];
   let options = [];
   if (values) {
@@ -44,14 +35,14 @@ function RangeSelect({ values, name, labels }) {
         value: subitem.key
       };
       options.push(option);
-      let pattern = name + "=" + subitem.key;
-      if (params.indexOf(pattern) != -1) {
+      if (search.get(name) &&  search.getAll(name).includes(subitem.key)) {
         defaultOptions.push(option);
       }
     });
   }
+
   return (
-    <div>
+    <div id={facet_item_id}>
       <div className="select-container">
         <Select
           defaultValue={defaultOptions}
