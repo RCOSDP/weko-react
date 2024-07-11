@@ -24,7 +24,8 @@ class FacetSearch extends React.Component {
       list_order: {},
       list_uiType: {},
       list_isOpen: {},
-      list_displayNumber: {}
+      list_displayNumber: {},
+      is_fasetLangDisplay: false
     };
     this.getTitleAndOrder = this.getTitleAndOrder.bind(this);
     this.get_facet_search_list = this.get_facet_search_list.bind(this);
@@ -53,6 +54,7 @@ class FacetSearch extends React.Component {
         this.setState({ list_uiType: uiTypeLst });
         this.setState({ list_isOpen: isOpenLst });
         this.setState({ list_displayNumber: displayNumberLst });
+        this.setState({ is_fasetLangDisplay: response.isFacetLangDisplay });
         this.setState({ is_enable: true });
       });
   }
@@ -88,36 +90,38 @@ class FacetSearch extends React.Component {
         if (hasBuckets) {
           list_facet[name] = val[name] ? val[name] : val;
           //START:temporary fix for JDCat
-          if (name != "Time Period(s)" && name != "Data Language" && name != "Access") {
-      	    let e = document.getElementById('lang-code');
-      	    let l = e.options[e.selectedIndex].value;
-      	    let tmp = list_facet[name];
-      	    for (let i = 0; i < tmp.buckets.length; i++) {
-      	      let a = tmp.buckets[i];
+          if (facetSearchComponent.state.is_fasetLangDisplay) {
+            if (name != "Time Period(s)" && name != "Data Language" && name != "Access") {
+      	      let e = document.getElementById('lang-code');
+        	    let l = e.options[e.selectedIndex].value;
+        	    let tmp = list_facet[name];
+        	    for (let i = 0; i < tmp.buckets.length; i++) {
+        	      let a = tmp.buckets[i];
 
-              if ((l == "en") && ((a.key).charCodeAt(0) > 256 || (a.key).charCodeAt(a.key.length - 1) > 256)) {
-      	    	//delete list_facet[name].buckets[i];
-              list_facet[name].buckets.splice(i,1);
-              i--;
-      	      } else if ((l != "en") && ((a.key).charCodeAt(0) < 256 && (a.key).charCodeAt(a.key.length - 1) < 256)) {
-      	    	//delete list_facet[name].buckets[i];
-              list_facet[name].buckets.splice(i,1);
-              i--;
-      	      }
-      	    }
-          }
-          if (name == "Access"){
-      	    let tmp = list_facet[name];
-      
-      	    for (let i = 0; i < tmp.buckets.length; i++) {
-      	      let a = tmp.buckets[i];
-      
-      	      if (((a.key).charCodeAt(0) > 256 || (a.key).charCodeAt(a.key.length - 1) > 256)) {
-      	    	  //delete list_facet[name].buckets[i];
+                if ((l == "en") && ((a.key).charCodeAt(0) > 256 || (a.key).charCodeAt(a.key.length - 1) > 256)) {
+      	      	//delete list_facet[name].buckets[i];
                 list_facet[name].buckets.splice(i,1);
                 i--;
-      	      } 
-      	    }
+        	      } else if ((l != "en") && ((a.key).charCodeAt(0) < 256 && (a.key).charCodeAt(a.key.length - 1) < 256)) {
+        	    	//delete list_facet[name].buckets[i];
+                list_facet[name].buckets.splice(i,1);
+                i--;
+      	        }
+      	      }
+            }
+            if (name == "Access"){
+        	    let tmp = list_facet[name];
+       
+        	    for (let i = 0; i < tmp.buckets.length; i++) {
+        	      let a = tmp.buckets[i];
+      
+      	        if (((a.key).charCodeAt(0) > 256 || (a.key).charCodeAt(a.key.length - 1) > 256)) {
+      	      	  //delete list_facet[name].buckets[i];
+                  list_facet[name].buckets.splice(i,1);
+                  i--;
+      	        } 
+      	      }
+            }
           }
           //END:temporary fix for JDCat
         }
