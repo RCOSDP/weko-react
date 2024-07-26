@@ -1,0 +1,104 @@
+.chbox-container {
+  margin-left:10px;
+  display:table;
+  width:100%;
+}
+
+.chbox-container label{
+  user-select: none;
+
+}
+
+.chbox-mdl {
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 40px 10px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s, visibility .3s;
+}
+
+.chbox-mdl.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .4s, visibility .4s;
+}
+
+.chbox-mdl::after {
+  display: inline-block;
+  height: 100%;
+  margin-left: -.05em;
+  vertical-align: middle;
+  content: ""
+}
+
+.chbox-mdl .overlay {
+  z-index: 10;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, .8)
+}
+
+.chbox-mdl .window {
+  box-sizing: border-box;
+  display: inline-block;
+  z-index: 20;
+  position: relative;
+  width: 90%;
+  min-width: 320px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 30px rgba(0, 0, 0, .6);
+  vertical-align: middle
+}
+
+.chbox-mdl .window .content {
+  max-height: 80vh;
+  overflow-y: auto;
+  text-align: left;
+  padding: 20px;
+  line-height: 15px
+}
+
+.chbox-mdl .window .content .list {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  max-height: 50vh;
+  overflow-y: scroll;
+}
+
+.chbox-mdl .window .content .footer {
+  width: 100%;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.chbox-mdl .window .content .footer button {
+  margin-left: 50px;
+}
+
+.rc-slider-mark-text {
+  display: none !important;
+}
+
+.rc-slider-dot {
+  border: initial !important;
+  background-color: initial !important;
+}
+
+.range-slider-error {
+  background-color: #FFF0F5;
+}
+
+.range-slider-error-msg {
+  color: red;
+}
