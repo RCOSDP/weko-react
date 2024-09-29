@@ -66,8 +66,8 @@ function RangeSlider({ value, name, labels }) {
   if (value) {
     value.map(function (subitem, k) {
       let parse_Int;
-      if (subitem.key.length > 0) {
-        parse_Int = parseInt(subitem.key);
+      if (subitem.name.length > 0) {
+        parse_Int = parseInt(subitem.name);
         marks_arr.push(parse_Int);
       }
     });
